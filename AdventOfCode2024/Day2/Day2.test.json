@@ -1,0 +1,16 @@
+{
+  "Body": [
+    {
+      "SolutionA": 2,
+      "SolutionB": 4
+    },
+    {
+      "SolutionA": 242,
+      "SolutionB": 311
+    },
+    {
+      "SolutionA": 0,
+      "SolutionB": 2
+    }
+  ]
+}
