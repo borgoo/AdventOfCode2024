@@ -9,7 +9,7 @@ namespace AdventOfCode2024
     internal class Program
     {
         const string NAMESPACE = "AdventOfCode2024";
-        const string DEFAULT_ENV = "Development";
+        const string DEFAULT_ENV = "Dev";
 
         public static void Main()
         {
