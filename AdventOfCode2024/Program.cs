@@ -24,6 +24,7 @@ namespace AdventOfCode2024
                     .Build();
 
 
+            bool lastDayAvailableOnly = config.GetValue<bool>("AppSettings:LastDayAvailableOnly");
             int startingDay = config.GetValue<int>("AppSettings:StartingDay");
             int endDay = config.GetValue<int>("AppSettings:LastDay");
 
@@ -39,7 +40,18 @@ namespace AdventOfCode2024
 
             for (int i = endDay; i >= startingDay; i--) {
 
-                LaunchDay(i);
+                try { 
+                    LaunchDay(i);
+                    if (lastDayAvailableOnly) return;
+                }
+                catch (DayNotFoundException)
+                {
+                    continue;
+                }
+                catch (NullReferenceException ex)
+                {
+                    Log.Error(ex.ToString());
+                }
             }
 
 
@@ -48,23 +60,12 @@ namespace AdventOfCode2024
         private static  void LaunchDay(int i) {
 
             string className = $"Day{i}";
-            try
-            {
-                string subDirName = className;
-                Type dayType = Type.GetType($"{NAMESPACE}.{subDirName}.{className}") ?? throw new DayNotFoundException($"{className} class not found");
-                object instance = Activator.CreateInstance(dayType) ?? throw new NullReferenceException($"{className} instance not found");
-                MethodInfo method = dayType.GetMethod("Run") ?? throw new NullReferenceException($"{className} Run method not found");
-                method.Invoke(instance, null);
+            string subDirName = className;
+            Type dayType = Type.GetType($"{NAMESPACE}.{subDirName}.{className}") ?? throw new DayNotFoundException($"{className} class not found");
+            object instance = Activator.CreateInstance(dayType) ?? throw new NullReferenceException($"{className} instance not found");
+            MethodInfo method = dayType.GetMethod("Run") ?? throw new NullReferenceException($"{className} Run method not found");
+            method.Invoke(instance, null);
 
-            }
-            catch (DayNotFoundException)
-            {
-                return;
-            }
-            catch (NullReferenceException ex)
-            {
-                Log.Error(ex.ToString());
-            }
         }
 
     }
