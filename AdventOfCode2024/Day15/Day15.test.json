@@ -2,7 +2,7 @@
   "Body": [
     {
       "SolutionA": 2028,
-      "SolutionB": 9021
+      "SolutionB": 1751
     },
     {
       "SolutionA": 10092,
@@ -10,7 +10,11 @@
     },
     {
       "SolutionA": 1509074,
-      "SolutionB": 0
+      "SolutionB": 1521453
+    },
+    {
+      "SolutionA": 908,
+      "SolutionB": 618
     }
   ]
 }
