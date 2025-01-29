@@ -8,6 +8,9 @@ namespace AdventOfCode2024.Utils
 {
     internal static class MatrixUtils
     {
+        private static readonly string COLOR_MAGENTA = Console.IsOutputRedirected ? "" : "\x1b[95m";
+        private static readonly string COLOR_NORMAL = Console.IsOutputRedirected ? "" : "\x1b[39m";
+
         public static StringBuilder MatrixToStringBuilder<T>(T[,] matrix) {
 
             StringBuilder sb = new();
@@ -45,17 +48,23 @@ namespace AdventOfCode2024.Utils
             return matrix;
         }
 
-        public static void Print<T>(T[,] matrix) {
+        public static void Print<T>(T[,] matrix, IList<char>? colouredChars = null) {
 
-            Console.WriteLine(MatrixToString(matrix));
+            string str = MatrixToString(matrix);
+            if(colouredChars is not null) {
+                foreach (char c in colouredChars) { 
+                    str = str.Replace(c.ToString(), COLOR_MAGENTA+c+COLOR_NORMAL);
+                }
+            }
+            Console.WriteLine(str);
         }
 
 
-        public static void Animate<T>(T[,] matrix, int millisecondsSleep = 500)
+        public static void Animate<T>(T[,] matrix, int millisecondsSleep = 500, IList<char>? colouredChars = null)
         {
 
             Console.Clear();
-            Print(matrix);
+            Print(matrix, colouredChars);
             Thread.Sleep(millisecondsSleep);
 
         }

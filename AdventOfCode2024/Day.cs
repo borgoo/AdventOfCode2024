@@ -27,7 +27,7 @@ namespace AdventOfCode2024
                 stopwatch.Stop();
                 Assert("SolA", resA, expectedResults[i].SolutionA);
                 if (TIMER_ACTIVE) PrintTime(stopwatch);
-                stopwatch.Start();
+                stopwatch.Restart();
                 long resB= SolveB(inputs[i]);
                 stopwatch.Stop();
                 Assert("SolB", resB, expectedResults[i].SolutionB);
