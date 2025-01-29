@@ -7,9 +7,12 @@ using System.Text;
 
 namespace AdventOfCode2024.Day16
 {
+    /// <summary>
+    /// TODO: BFS WAY BETTER THAN DFS HERE .-.
+    /// </summary>
     internal class Day16 : Day
     {
-        private static bool _debugActive = false; 
+        private readonly static bool _debugActive = false; 
 
         const int ROTATION_COST = 1000;
         const int MOVING_COST = 1;
@@ -34,18 +37,19 @@ namespace AdventOfCode2024.Day16
             {'<',(0,-1)}
         };
 
+
         protected override long SolveA(string input)
         {
             long? min = null;
             var (matrix, deerStartingPosition, endPosition) = HandleInput(input);
 
             Dictionary<((int X, int Y), char) , long> bestCost = [];
-         
+
             foreach (char direction in rotations.Keys)
             {
                 int startingCost = CalculateRotationCost(DEER_STARTING_DIRECTION, direction);
                 bestCost.Add((deerStartingPosition, direction), startingCost);
-                Dfs(matrix, bestCost, [], startingCost, deerStartingPosition, endPosition, direction, ref min);
+                FastDfs(matrix, bestCost, [], startingCost, deerStartingPosition, endPosition, direction, ref min);
             }
 
             return min ?? throw new NullReferenceException("No valid path found.");
@@ -54,7 +58,22 @@ namespace AdventOfCode2024.Day16
 
         protected override long SolveB(string input)
         {
-            return -1;
+  
+            long? min = null;
+            var (matrix, deerStartingPosition, endPosition) = HandleInput(input);
+
+            Dictionary<((int X, int Y), char), long> bestCost = [];
+
+            HashSet<(int X, int Y)> posOfWinningPaths = [];
+            foreach (char direction in rotations.Keys)
+            {
+                int startingCost = CalculateRotationCost(DEER_STARTING_DIRECTION, direction);
+                bestCost.Add((deerStartingPosition, direction), startingCost);
+                SlowDfs(matrix, bestCost, [], startingCost, deerStartingPosition, endPosition, direction, ref min, posOfWinningPaths);
+            }
+
+            return posOfWinningPaths.Count;
+
         }
 
         private static (char[,] matrix, (int X, int Y) deerStartingPosition, (int X, int Y) endPosition) HandleInput(string input)
@@ -90,24 +109,52 @@ namespace AdventOfCode2024.Day16
             return (matrix, deerStartingPosition.Value, endPosition.Value);
         }
 
+        private static void FastDfs(char[,] matrix, Dictionary<((int X, int Y), char), long> bestCost, HashSet<(int X, int Y)> seen, long currentCost, (int X, int Y) deerPosition, (int X, int Y) endPosition, char currentDirection, ref long? min)
+        {
+            Dfs(matrix, bestCost, [], currentCost, deerPosition, endPosition, currentDirection, ref min, true, null);
+        }
+        private static void SlowDfs(char[,] matrix, Dictionary<((int X, int Y), char), long> bestCost, HashSet<(int X, int Y)> seen, long currentCost, (int X, int Y) deerPosition, (int X, int Y) endPosition, char currentDirection, ref long? min, HashSet<(int X, int Y)>? posOfWinningPaths)
+        {
+            Dfs(matrix, bestCost, [], currentCost, deerPosition, endPosition, currentDirection, ref min, false, posOfWinningPaths);
+        }
 
-        private static void Dfs(char[,] matrix, Dictionary<((int X, int Y),char), long> bestCost, HashSet<(int X, int Y)> seen, long currentCost, (int X, int Y) deerPosition, (int X, int Y) endPosition, char currentDirection, ref long? min ) {
 
+        private static void Dfs(char[,] matrix, Dictionary<((int X, int Y),char), long> bestCost, HashSet<(int X, int Y)> seen, long currentCost, (int X, int Y) deerPosition, (int X, int Y) endPosition, char currentDirection, ref long? min, bool strictMode, HashSet<(int X, int Y)>? posOfWinningPaths = null) {
+
+            if (posOfWinningPaths is not null && strictMode ) throw new Exception("strictMode cannot be used to calculate posOfWinningPaths");
             if (_debugActive) Debug(matrix, deerPosition, currentDirection);
 
-            if (min.HasValue && min.Value <= currentCost)
+
+            if (min.HasValue && (( min.Value < currentCost) || (strictMode && min.Value == currentCost)) )
             {
                 return;
             }
 
-            if (deerPosition == endPosition) {
+            if (deerPosition == endPosition)
+            {
+
+                bool posOfWinningPathsIsRequired = posOfWinningPaths is not null;
+
+                if (posOfWinningPathsIsRequired) {
+
+                    if(min is null || currentCost < min) {
+                        posOfWinningPaths!.Clear();
+                    }
+
+                    if (currentCost <= min) {
+                        posOfWinningPaths!.UnionWith(seen);
+                        posOfWinningPaths.Add(endPosition);
+                    }
+
+                }
 
                 min = currentCost;
                 return;
 
-            }         
+            }
 
             seen.Add(deerPosition);
+
 
             foreach (char direction in rotations.Keys) {
 
@@ -117,12 +164,12 @@ namespace AdventOfCode2024.Day16
 
                 int tmpCost = CalculateCostToReachAdiacentPosition(deerPosition, adiacentPosition, currentDirection, direction);
                 long prevOfCurrentCost = (long)tmpCost + currentCost;
-                if (min.HasValue && min.Value <= prevOfCurrentCost) continue;
+                if (min.HasValue && ((min.Value < prevOfCurrentCost) || (strictMode && min.Value == prevOfCurrentCost))) continue;
 
 
                 if (bestCost.ContainsKey((adiacentPosition, direction))) {
 
-                    if (bestCost[(adiacentPosition, direction)] <= prevOfCurrentCost) continue;
+                    if (bestCost[(adiacentPosition, direction)] < prevOfCurrentCost || ( strictMode && bestCost[(adiacentPosition, direction)] == prevOfCurrentCost)) continue;
                     else bestCost[(adiacentPosition, direction)] = prevOfCurrentCost;
                 }
                 else {
@@ -130,7 +177,7 @@ namespace AdventOfCode2024.Day16
                 }
 
                 HashSet<(int X, int Y)> currentPathSeen = new(seen);
-                Dfs(matrix, bestCost, currentPathSeen, prevOfCurrentCost, adiacentPosition, endPosition, direction, ref min);
+                Dfs(matrix, bestCost, currentPathSeen, prevOfCurrentCost, adiacentPosition, endPosition, direction, ref min, strictMode, posOfWinningPaths);
             }
 
             return;
