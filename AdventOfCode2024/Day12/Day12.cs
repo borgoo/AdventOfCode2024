@@ -10,12 +10,12 @@ namespace AdventOfCode2024.Day12
     {
         private static readonly bool _debugActive = false;
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             return CalculatePrices(input).Price;
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             return CalculatePrices(input).DiscountedPrice;
         }

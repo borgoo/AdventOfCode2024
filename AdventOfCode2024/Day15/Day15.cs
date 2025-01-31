@@ -22,7 +22,7 @@ namespace AdventOfCode2024.Day15
             { 'v', (1,0) },
         };
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             var (matrix, moves, robotPosition, obstacles, walls) = HandleInput(input);
             ApplyMoves(matrix, moves, robotPosition, obstacles, walls);
@@ -37,7 +37,7 @@ namespace AdventOfCode2024.Day15
             return gpsSum;
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             OrderedDictionary<char, string> mapping = new()
             {

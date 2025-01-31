@@ -10,8 +10,9 @@ namespace AdventOfCode2024
         private readonly bool TIMER_ACTIVE = true;
 
 
-        protected abstract long SolveA(string input);
-        protected abstract long SolveB(string input);
+        protected abstract object SolveA(string input);
+        protected abstract object SolveB(string input);
+
 
         public void Run() {
 
@@ -23,12 +24,12 @@ namespace AdventOfCode2024
             for (int i = 0; i < inputs.Count; i++) {
                 Log.Debug($"== input {i + 1} ==");
                 stopwatch.Start();
-                long resA = SolveA(inputs[i]);
+                object resA = SolveA(inputs[i]);
                 stopwatch.Stop();
                 Assert("SolA", resA, expectedResults[i].SolutionA);
                 if (TIMER_ACTIVE) PrintTime(stopwatch);
                 stopwatch.Restart();
-                long resB= SolveB(inputs[i]);
+                object resB= SolveB(inputs[i]);
                 stopwatch.Stop();
                 Assert("SolB", resB, expectedResults[i].SolutionB);
                 if (TIMER_ACTIVE) PrintTime(stopwatch);
@@ -46,8 +47,8 @@ namespace AdventOfCode2024
             public Solution[] Body { get; set; } = [];
         }
         public class Solution { 
-            public long SolutionA { get; set; }
-            public long SolutionB{ get; set; }
+            public object SolutionA { get; set; }
+            public object SolutionB{ get; set; }
         }
 
         protected string GetClassName() {
@@ -96,9 +97,12 @@ namespace AdventOfCode2024
 
 
 
-        protected static void Assert(string str, long result, long expectedResult) {
+        protected static void Assert(string str, object result, object expectedResult) {
 
-            if (result != expectedResult) {
+            _ = result ?? throw new NullReferenceException("Null result not allowed.");
+            _ = expectedResult ?? throw new NullReferenceException("Null expected result not allowed.");
+
+            if (result.ToString() != expectedResult.ToString()) {
                 Log.Debug($"{str}: [{TurnRed("FAIL")}]");
                 Log.Debug($"  Expected: {expectedResult}\n  Result: {result}");
             }

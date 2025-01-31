@@ -9,7 +9,7 @@ namespace AdventOfCode2024.Day14
         private readonly LoadingBar _loading = new();
         private readonly bool _debugActive = true;
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             var inputs = HandleInput(input);
 
@@ -50,7 +50,7 @@ namespace AdventOfCode2024.Day14
         }
 
         
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             var inputs = HandleInput(input);
 

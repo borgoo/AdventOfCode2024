@@ -9,12 +9,12 @@ namespace AdventOfCode2024.Day11
         private static readonly bool _debugActive = false;
 
       
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             return Resolve(input);
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             int forcedNumOfBlinks = SOLB_BLINKS;
             return Resolve(input, forcedNumOfBlinks);

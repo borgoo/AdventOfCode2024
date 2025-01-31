@@ -36,7 +36,7 @@ namespace AdventOfCode2024.Day6
  
 
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             char[,] matrix = FormatInput(input);
             var (X, Y, Orientations) = GetGuardStartingCondition(matrix);
@@ -44,7 +44,7 @@ namespace AdventOfCode2024.Day6
             return set.Count;
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             char[,] matrix = FormatInput(input);
             var (X, Y, Orientations) = GetGuardStartingCondition(matrix);
