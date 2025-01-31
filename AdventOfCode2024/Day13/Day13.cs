@@ -15,7 +15,7 @@ namespace AdventOfCode2024.Day13
         const int BUTTON_B_COST = 1;
         const long SOLVE_B_SHIFTING = 10000000000000;
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             long ans = 0;
             var clawMachines = HandleInput(input);
@@ -27,7 +27,7 @@ namespace AdventOfCode2024.Day13
             return ans;
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             long ans = 0;
             var clawMachines = HandleInput(input);

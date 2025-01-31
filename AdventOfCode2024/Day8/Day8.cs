@@ -9,13 +9,13 @@ namespace AdventOfCode2024.Day8
 {
     internal class Day8 : Day
     {
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             var antinodes = GetAntinodes(input, 1);
             return antinodes.Count;
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             var antinodes = GetAntinodes(input);            
             return antinodes.Count;

@@ -4,12 +4,12 @@ namespace AdventOfCode2024.Day3
 {
     internal class Day3 : Day
     {
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             return CalculateMul(input);
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             return CalculateMul(input, true);
         }

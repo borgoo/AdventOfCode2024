@@ -8,7 +8,7 @@ namespace AdventOfCode2024.Day1
 {
     internal class Day1 : Day
     {
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             int ans = 0;
             string[] rows = input.Split(new string("\r\n"));
@@ -32,7 +32,7 @@ namespace AdventOfCode2024.Day1
             return ans;
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             int ans = 0;
             string[] rows = input.Split(new string("\r\n"));

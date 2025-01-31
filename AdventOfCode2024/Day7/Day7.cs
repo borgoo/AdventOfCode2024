@@ -36,7 +36,7 @@ namespace AdventOfCode2024.Day7
             }
         }
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             Operation[] operations = [
                     new Plus(),
@@ -50,7 +50,7 @@ namespace AdventOfCode2024.Day7
             return ans;
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             Operation[] operations = [
                    new Plus(),

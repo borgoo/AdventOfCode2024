@@ -7,12 +7,12 @@ namespace AdventOfCode2024.Day9
         private static readonly bool _debugActive = false;
 
        
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             return CompactMemory(input);
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             return CompactMemoryMovingEntireFiles(input);
         }

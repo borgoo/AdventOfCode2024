@@ -12,12 +12,12 @@ namespace AdventOfCode2024.Day2
         private const int MIN_DELTA = 1;
         private const int MAX_DELTA = 3;
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             return CountSafeLevels(input);
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             return CountSafeLevels(input, 1);
         }

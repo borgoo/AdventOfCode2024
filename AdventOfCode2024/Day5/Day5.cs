@@ -34,14 +34,14 @@ namespace AdventOfCode2024.Day5
 
         }
         
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             var (Rules, Inputs) = HandleInput(input);
             return ApplyRulesToInputs(Rules, Inputs).Valid;
 
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             var (Rules, Inputs) = HandleInput(input);
             return ApplyRulesToInputs(Rules, Inputs).Fixed;

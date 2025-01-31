@@ -11,12 +11,12 @@ namespace AdventOfCode2024.Day10
         const int START_VAL = 0;
         const int END_VAL = 9;
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             return TraverseHiking(input);
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
             return TraverseHiking(input, START_VAL, END_VAL, false);
         }

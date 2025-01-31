@@ -38,7 +38,7 @@ namespace AdventOfCode2024.Day16
         };
 
 
-        protected override long SolveA(string input)
+        protected override object SolveA(string input)
         {
             long? min = null;
             var (matrix, deerStartingPosition, endPosition) = HandleInput(input);
@@ -56,7 +56,7 @@ namespace AdventOfCode2024.Day16
 
         }
 
-        protected override long SolveB(string input)
+        protected override object SolveB(string input)
         {
   
             long? min = null;
