@@ -23,16 +23,31 @@ namespace AdventOfCode2024
             Stopwatch stopwatch = new();
             for (int i = 0; i < inputs.Count; i++) {
                 Log.Debug($"== input {i + 1} ==");
-                stopwatch.Start();
-                object resA = SolveA(inputs[i]);
-                stopwatch.Stop();
-                Assert("SolA", resA, expectedResults[i].SolutionA);
-                if (TIMER_ACTIVE) PrintTime(stopwatch);
-                stopwatch.Restart();
-                object resB= SolveB(inputs[i]);
-                stopwatch.Stop();
-                Assert("SolB", resB, expectedResults[i].SolutionB);
-                if (TIMER_ACTIVE) PrintTime(stopwatch);
+                try
+                {
+                    stopwatch.Start();
+                    object resA = SolveA(inputs[i]);
+                    stopwatch.Stop();
+                    Assert("SolA", resA, expectedResults[i].SolutionA);
+                    if (TIMER_ACTIVE) PrintTime(stopwatch);
+                }
+                catch (NotImplementedException) {
+                    NotImplemented("SolA");
+                }
+
+                try
+                {
+                    stopwatch.Restart();
+                    object resB = SolveB(inputs[i]);
+                    stopwatch.Stop();
+                    Assert("SolB", resB, expectedResults[i].SolutionB);
+                    if (TIMER_ACTIVE) PrintTime(stopwatch);
+                } catch (NotImplementedException)
+                {
+                    NotImplemented("SolB");
+                }
+
+              
             }
 
             SayGoodBye();
@@ -123,6 +138,10 @@ namespace AdventOfCode2024
 
             return $"\x1b[38;5;154m{txt}\x1b[0m";
         
+        }
+
+        private static void NotImplemented(string str) {
+            Log.Debug($"{str} not implemented yet.");
         }
 
         private static void PrintTime(Stopwatch stopwatch) {
