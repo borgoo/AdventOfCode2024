@@ -19,25 +19,20 @@ namespace AdventOfCode2024.Day17
         {
             var (regA, regB, regC, program) = HandleInput(input);
 
-            string ans = new Program(program, regA, regB, regC).Run();
+            string ans;
+            try {
+                ans = new Program(program, regA, regB, regC).Run();
+            }
+            catch(LoopException lex) {
+                ans = lex.Message;
+            }          
 
             return ans;
         }
 
-        private static int c = 0; 
         protected override object SolveB(string input)
         {
-            if (c < 2) { c++; throw new NotImplementedException(); }
-            var (regA, regB, regC, program) = HandleInput(input);
-
-            string ans = String.Empty;
-
-            long regAVal = 0;
-            while (ans != program) {
-                ans = new Program(program, regAVal, regB, regC).Run();
-            }
-
-            return regAVal;
+            return -1;
         }
 
         const string PATTERN_REG_A = @"Register A:\s*(\d+)";
@@ -62,9 +57,13 @@ namespace AdventOfCode2024.Day17
 
             return (regA, regB, regC, program);
         }
-     
 
-        public class Program(string programStr, long regA = 0, long regB = 0, long regC = 0) {
+        private class LoopException(string? message = "Infinite loop.") : Exception(message) {
+
+        }
+
+
+        private class Program(string programStr, long regA = 0, long regB = 0, long regC = 0) {
 
             private static readonly HashSet<int> _canBeLaunchedWithoutOperand = [4];
             private readonly int[] ProgramCode = programStr is null ? throw new NullReferenceException() : programStr.Split(',').Select(e => e[0] - '0').ToArray();
@@ -190,6 +189,11 @@ namespace AdventOfCode2024.Day17
 
 
             public string Run() {
+
+                HashSet<(long regA, long regB, long regC, int instructionPointer)> alreadySeen = [];
+
+                if (alreadySeen.Contains((RegA, RegB, RegC, InstructionPointer))) throw new LoopException();
+                alreadySeen.Add((RegA, RegB, RegC, InstructionPointer));
 
                 while (InstructionPointer < ProgramCode.Length)
                 {
