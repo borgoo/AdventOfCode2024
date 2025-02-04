@@ -2,15 +2,15 @@
   "Body": [
     {
       "SolutionA": "4,6,3,5,6,3,5,2,1,0",
-      "SolutionB": 5
+      "SolutionB": "Not solvable."
     },
     {
       "SolutionA": "7,1,2,3,2,6,7,2,5",
-      "SolutionB": 5
+      "SolutionB": 202356708354602
     },
     {
       "SolutionA": "5,7,3,0",
-      "SolutionB": 117440
+      "SolutionB": "117440"
     }
   ]
 }
