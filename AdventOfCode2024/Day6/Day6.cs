@@ -17,6 +17,7 @@ namespace AdventOfCode2024.Day6
     {
         const char DEFAULT_GUARD_ORIENTATION = '^';
 
+
         private static readonly Dictionary<char, (int Dx, int Dy)> increments = new()
         {
             { '^', (-1, 0) },
@@ -51,11 +52,14 @@ namespace AdventOfCode2024.Day6
             var set = MoveTheGuard(matrix, (X, Y), Orientations);
             int ans = 0;
 
+            _loadingBar.Enabled = matrix.GetLength(0) > 100;
+
             set.Remove((X,Y));
             (int X, int Y)[] possibleObstaclePositions = [.. set];
 
             for (int i = 0; i < possibleObstaclePositions.Length; i++) {
 
+                _loadingBar.Show(i, possibleObstaclePositions.Length);
              
                 if (i != 0) {
                     matrix[possibleObstaclePositions[i-1].X, possibleObstaclePositions[i - 1].Y] = '.';
@@ -74,6 +78,8 @@ namespace AdventOfCode2024.Day6
                 }
 
             }
+
+            _loadingBar.Terminate();
 
 
             return ans;
