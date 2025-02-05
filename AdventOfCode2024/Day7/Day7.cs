@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdventOfCode2024.Utils;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,10 +59,18 @@ namespace AdventOfCode2024.Day7
                     new Concat()
            ];
             long ans = 0;
-            foreach (string row in input.Split("\r\n"))
+
+            string[] rows = input.Split("\r\n");
+            _loadingBar.Enabled = rows.Length > 200;
+
+            int i = 0;
+            foreach (string row in rows)
             {
+                _loadingBar.Show(i, rows.Length);
                 ans += CanBeCalibrated(row, operations);
+                i++;
             }
+            _loadingBar.Terminate();
 
             return ans;
         }

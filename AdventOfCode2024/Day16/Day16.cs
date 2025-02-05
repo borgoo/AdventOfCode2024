@@ -45,12 +45,15 @@ namespace AdventOfCode2024.Day16
 
             Dictionary<((int X, int Y), char) , long> bestCost = [];
 
+            _waitingBar.Enabled = matrix.GetLength(0) > 100;
+            _waitingBar.Show();
             foreach (char direction in rotations.Keys)
             {
                 int startingCost = CalculateRotationCost(DEER_STARTING_DIRECTION, direction);
                 bestCost.Add((deerStartingPosition, direction), startingCost);
                 FastDfs(matrix, bestCost, [], startingCost, deerStartingPosition, endPosition, direction, ref min);
             }
+            _waitingBar.Terminate();
 
             return min ?? throw new NullReferenceException("No valid path found.");
 
@@ -65,12 +68,18 @@ namespace AdventOfCode2024.Day16
             Dictionary<((int X, int Y), char), long> bestCost = [];
 
             HashSet<(int X, int Y)> posOfWinningPaths = [];
+
+            _waitingBar.Enabled = matrix.GetLength(0) > 100;
+            _waitingBar.Show();
             foreach (char direction in rotations.Keys)
             {
                 int startingCost = CalculateRotationCost(DEER_STARTING_DIRECTION, direction);
                 bestCost.Add((deerStartingPosition, direction), startingCost);
                 SlowDfs(matrix, bestCost, [], startingCost, deerStartingPosition, endPosition, direction, ref min, posOfWinningPaths);
             }
+            _waitingBar.Terminate();
+
+
 
             return posOfWinningPaths.Count;
 

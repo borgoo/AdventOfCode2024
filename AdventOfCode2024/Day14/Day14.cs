@@ -6,8 +6,6 @@ namespace AdventOfCode2024.Day14
 {
     internal partial class Day14 : Day
     {
-        private readonly LoadingBar _loading = new();
-        private readonly bool _debugActive = true;
 
         protected override object SolveA(string input)
         {
@@ -73,7 +71,7 @@ namespace AdventOfCode2024.Day14
 
                 int clusterSize = FindMaxClusterSize(result);
                 if (ans is null || ans.Value.MaxClusterValue < clusterSize) ans = (time, clusterSize);
-                if (_debugActive) _loading.Show(time, maxTime, startingTime);
+                _loadingBar.Show(time, maxTime, startingTime);
             }
 
             return ans?.Time ?? throw new NullReferenceException();

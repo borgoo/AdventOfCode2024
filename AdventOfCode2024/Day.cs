@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using AdventOfCode2024.Utils;
+using Serilog;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -8,7 +9,10 @@ namespace AdventOfCode2024
     internal abstract class Day
     {
         private readonly bool TIMER_ACTIVE = true;
+        protected readonly LoadingBar _loadingBar = new();
+        protected readonly WaitingBar _waitingBar = new();
 
+        
 
         protected abstract object SolveA(string input);
         protected abstract object SolveB(string input);
