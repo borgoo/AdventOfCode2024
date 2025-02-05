@@ -15,11 +15,15 @@ namespace AdventOfCode2024.Utils
         private static readonly int _valPosition = EMPTY.IndexOf(']')+1;
         private static readonly int _eachStepPercentage = 100/_steps;
 
+        public bool Enabled = true;
+
         private int? OldNormalizedPecentage { get; set; } = null;
 
 
-        public void Show(int currentVal, int endLoopVal, int startingLoopVal = 0, bool lessAndNotEqual = true) { 
-            
+        public void Show(int currentVal, int endLoopVal, int startingLoopVal = 0, bool lessAndNotEqual = true) {
+
+            if (!Enabled) return;
+
             int done = currentVal - startingLoopVal;
             int toBeDone = lessAndNotEqual ? -1 : 0;
             toBeDone += (endLoopVal - startingLoopVal);
@@ -30,13 +34,17 @@ namespace AdventOfCode2024.Utils
         }
         public void Show(int done, int toBeDone) {
 
+            if (!Enabled) return;
             Show(done * 100 / toBeDone);
             
         }
 
-        public void Show(int effectivePercentage) {
+        public void Show(int effectivePercentage)
+        {
+            if (!Enabled) return;
 
-            if (OldNormalizedPecentage is null) {
+            if (OldNormalizedPecentage is null)
+            {
                 OldNormalizedPecentage = 0;
                 Console.Write($"{EMPTY}  0%");
                 return;
@@ -55,7 +63,7 @@ namespace AdventOfCode2024.Utils
 
             int calcCursorPostion = 0 + _naturalPadding + numOfStepsAlreadyAdded;
             Console.SetCursorPosition(calcCursorPostion, Console.GetCursorPosition().Top);
-            for(int i = 0; i < numOfStepsToAdd; i++) Console.Write(LOADING_CHAR);
+            for (int i = 0; i < numOfStepsToAdd; i++) Console.Write(LOADING_CHAR);
 
 
             if (normalizedPercentage < 10) Console.SetCursorPosition(_valPosition + 2, Console.GetCursorPosition().Top);
@@ -68,12 +76,13 @@ namespace AdventOfCode2024.Utils
 
             OldNormalizedPecentage = normalizedPercentage;
             return;
+        }
 
+        public void Terminate(bool appendNewLine = true) {
 
+            if (!Enabled) return;
 
-
-
-
+            Show(100);
         }
       
     }
