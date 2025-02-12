@@ -10,6 +10,8 @@ namespace AdventOfCode2024.Day19
 {
     internal class Day19 : Day
     {
+       
+
         protected override object SolveA(string input)
         {
             var (availableTowels, toDoCombinations) = HandleInput(input);
@@ -17,7 +19,7 @@ namespace AdventOfCode2024.Day19
             HashSet<string> notMakableDesigns = [];
             int c = 0;
             foreach (string design in toDoCombinations) {
-                if (Dp(design, availableTowels, notMakableDesigns)) c++;
+                if (FeasibilityCheck(design, availableTowels, notMakableDesigns)) c++;
             }       
             
 
@@ -26,7 +28,19 @@ namespace AdventOfCode2024.Day19
 
         protected override object SolveB(string input)
         {
-            throw new NotImplementedException();
+            var (availableTowels, toDoCombinations) = HandleInput(input);
+
+            HashSet<string> notMakableDesigns = [];
+            Dictionary<string, long> cache = [];
+            long count = 0;
+            foreach (string design in toDoCombinations)
+            {
+                CombinationsCounter(design, availableTowels, 0, cache);
+                count += cache.ContainsKey(design) ? cache[design] : 0;
+            }
+
+
+            return count;
         }
 
       
@@ -46,7 +60,15 @@ namespace AdventOfCode2024.Day19
 
         }
 
-        private static bool Dp(string originalDesign, HashSet<string> availableTowels, HashSet<string> notMakableDesigns, int designIndex = 0 ) {
+        /// <summary>
+        /// DP Top-Down with memoization
+        /// </summary>
+        /// <param name="originalDesign"></param>
+        /// <param name="availableTowels"></param>
+        /// <param name="notMakableDesigns"></param>
+        /// <param name="designIndex"></param>
+        /// <returns></returns>
+        private static bool FeasibilityCheck(string originalDesign, HashSet<string> availableTowels, HashSet<string> notMakableDesigns, int designIndex = 0 ) {
 
             if (notMakableDesigns.Contains(originalDesign[designIndex..].ToString()) ) return false;
             if (availableTowels.Contains(originalDesign)) return true;
@@ -62,7 +84,7 @@ namespace AdventOfCode2024.Day19
                     string craftableStr = originalDesign[..(i+1)].ToString();
                     availableTowels.Add(craftableStr);
                 }
-                bool ok = Dp(originalDesign, availableTowels, notMakableDesigns, i+1);
+                bool ok = FeasibilityCheck(originalDesign, availableTowels, notMakableDesigns, i+1);
                 if (ok) return true;
 
             }
@@ -72,11 +94,53 @@ namespace AdventOfCode2024.Day19
         
         }
 
-
-
-
-
-        
        
+        /// <summary>
+        /// DP Top-Down with memoization
+        /// </summary>
+        /// <param name="originalDesign"></param>
+        /// <param name="availableTowels"></param>
+        /// <param name="designIndex"></param>
+        /// <param name="cache"></param>
+        /// <returns></returns>
+        private static long CombinationsCounter(
+           string originalDesign,
+           HashSet<string> availableTowels,
+           int designIndex,
+           Dictionary<string, long> cache)
+        {
+
+            string currStringToElaborate = originalDesign[designIndex..].ToString();
+            if (cache.ContainsKey(currStringToElaborate)) return cache[currStringToElaborate];
+
+            StringBuilder sb = new();
+            for (int i = designIndex; i < originalDesign.Length; i++)
+            {
+
+                sb.Append(originalDesign[i]);
+                string currWindow = sb.ToString();
+                if (!availableTowels.Contains(currWindow)) continue;
+                if (i == originalDesign.Length - 1)
+                {
+                    cache.TryAdd(currStringToElaborate, 0);
+                    cache[currStringToElaborate] += 1;
+                    return cache[currStringToElaborate];
+                }
+                long res = CombinationsCounter(originalDesign, availableTowels, i + 1, cache);
+                cache.TryAdd(currStringToElaborate, 0);
+                cache[currStringToElaborate] += res;
+               
+            }
+
+
+            return cache.ContainsKey(currStringToElaborate) ? cache[currStringToElaborate] : 0;
+
+        }
+
+
+
+
+
+
     }
 }
