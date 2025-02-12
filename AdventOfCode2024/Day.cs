@@ -12,6 +12,8 @@ namespace AdventOfCode2024
         protected readonly LoadingBar _loadingBar = new();
         protected readonly WaitingBar _waitingBar = new();
 
+        protected bool SolBIsRunning { get; private set; } = false; 
+
         
 
         protected abstract object SolveA(string input);
@@ -42,7 +44,9 @@ namespace AdventOfCode2024
                 try
                 {
                     stopwatch.Restart();
+                    SolBIsRunning = true;
                     object resB = SolveB(inputs[i]);
+                    SolBIsRunning = false;
                     stopwatch.Stop();
                     Assert("SolB", resB, expectedResults[i].SolutionB);
                     if (TIMER_ACTIVE) PrintTime(stopwatch);
