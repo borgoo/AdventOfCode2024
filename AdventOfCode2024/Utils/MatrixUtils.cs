@@ -31,6 +31,9 @@ namespace AdventOfCode2024.Utils
             return MatrixToStringBuilder(matrix).ToString();
         }
 
+        public static char[,] StringToCharMatrix(string input) {
+            return StringRowsToMatrix(input.Split("\r\n"));
+        }
         public static char[,] StringRowsToMatrix(string[] rows)
         {
             char[,] matrix = new char[rows.Length, rows[0].Length];
@@ -66,6 +69,16 @@ namespace AdventOfCode2024.Utils
             Console.Clear();
             Print(matrix, colouredChars);
             Thread.Sleep(millisecondsSleep);
+
+        }
+
+        public static void Animate<T>(T[,] matrix, (int X, int Y) currentPostion, char subject, int millisecondsSleep = 500)
+        {
+
+            char[,] tmp = new char[matrix.GetLength(0), matrix.GetLength(1)];
+            Array.Copy(matrix, tmp, matrix.Length);
+            tmp[currentPostion.X, currentPostion.Y] = subject;
+            Animate(tmp, millisecondsSleep, [subject]);
 
         }
 
