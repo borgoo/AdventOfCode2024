@@ -34,14 +34,12 @@ namespace AdventOfCode2024.Day20
 
         protected override object SolveA(string input)
         {
-            //_waitingBar.Show();
             var (matrix, startingPosition, endPosition) = HandleInput(input);
             Dictionary<(int X, int Y), NodeData> graph = [];
             int best = Bfs(matrix, startingPosition, endPosition, graph);
             HashSet<(int X, int Y)> bestPathOnlyNodes = GetBestPathNodes(graph, endPosition);
             int[] results = new int[best];
             CheatSomePath(matrix, startingPosition, endPosition, graph, bestPathOnlyNodes, results);
-            //_waitingBar.Terminate();
 
             for (int i = best - 1; _debugActive && i >= 0; i--)
             {
@@ -103,9 +101,9 @@ namespace AdventOfCode2024.Day20
             int numOfRows = matrix.GetLength(0);
             int numofColumns = matrix.GetLength(1);
             HashSet<(int X, int Y)> seen = [];
-            Queue<(int X, int Y, bool Cheated)> nodes = [];
+            Queue<(int X, int Y)> nodes = [];
 
-            nodes.Enqueue((startPosition.X, startPosition.Y, false));
+            nodes.Enqueue(startPosition);
             seen.Add(startPosition);
 
             int depth = 1;
@@ -117,8 +115,7 @@ namespace AdventOfCode2024.Day20
                 for (int i = 0; i < num; i++)
                 {
 
-                    (int X, int Y, bool Cheated) currNode = nodes.Dequeue();
-                    bool alreadyCheated = currNode.Cheated;
+                    (int X, int Y) currNode = nodes.Dequeue();
 
                     foreach (var (Dx, Dy) in directions)
                     {
@@ -127,20 +124,17 @@ namespace AdventOfCode2024.Day20
                         if (siblingNode.X < 0 || siblingNode.X >= numOfRows) continue;
                         if (siblingNode.Y < 0 || siblingNode.Y >= numofColumns) continue;
                         if (matrix[siblingNode.X, siblingNode.Y] == WALL_CHAR) continue;
-                        if (!alreadyCheated && seen.Contains(siblingNode)) continue;
+                        if (seen.Contains(siblingNode)) continue;
                         if (graph[siblingNode].Depth < graph[(currNode.X, currNode.Y)].Depth) continue;
                         if (siblingNode == endPosition)
                         {
-                            int fixedDepth = alreadyCheated ? depth +1 : depth;
-                            solutions[fixedDepth]++;  
+                            solutions[depth]++;  
                             continue;
                         }
 
-                        if(!alreadyCheated) seen.Add(siblingNode);
-                        nodes.Enqueue((siblingNode.X, siblingNode.Y, alreadyCheated));
+                        seen.Add(siblingNode);
+                        nodes.Enqueue(siblingNode);
                     }
-
-                    if (alreadyCheated) continue;
 
                     //else cheat from this position
                     foreach (var (Dx, Dy) in teleports)
@@ -162,11 +156,6 @@ namespace AdventOfCode2024.Day20
                         int toBeDone = solutions.Length - graph[siblingNode].Depth;
                         int fixedDepth = currDone + toBeDone;
                         solutions[fixedDepth]++;
-
-
-
-
-
                     }
 
 
