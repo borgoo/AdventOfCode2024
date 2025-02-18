@@ -34,13 +34,14 @@ namespace AdventOfCode2024.Day20
 
         protected override object SolveA(string input)
         {
-            _waitingBar.Show();
+            //_waitingBar.Show();
             var (matrix, startingPosition, endPosition) = HandleInput(input);
-            Dictionary<(int X, int Y), int> seen = [];
-            int best = Bfs(matrix, startingPosition, endPosition, seen);
+            Dictionary<(int X, int Y), NodeData> graph = [];
+            int best = Bfs(matrix, startingPosition, endPosition, graph);
+            HashSet<(int X, int Y)> bestPathOnlyNodes = GetBestPathNodes(graph, endPosition);
             int[] results = new int[best];
-            CheatSomePath(matrix, startingPosition, endPosition, seen, results);
-            _waitingBar.Terminate();
+            CheatSomePath(matrix, startingPosition, endPosition, graph, bestPathOnlyNodes, results);
+            //_waitingBar.Terminate();
 
             for (int i = best - 1; _debugActive && i >= 0; i--)
             {
@@ -92,7 +93,8 @@ namespace AdventOfCode2024.Day20
             char[,] matrix,
             (int X, int Y) startPosition,
             (int X, int Y) endPosition,
-            Dictionary<(int X, int Y), int> bestPathHistory,
+            Dictionary<(int X, int Y), NodeData> graph,
+            HashSet<(int X, int Y)> bestPathOnlyNodes,
             int[] solutions
             
         )
@@ -126,7 +128,7 @@ namespace AdventOfCode2024.Day20
                         if (siblingNode.Y < 0 || siblingNode.Y >= numofColumns) continue;
                         if (matrix[siblingNode.X, siblingNode.Y] == WALL_CHAR) continue;
                         if (!alreadyCheated && seen.Contains(siblingNode)) continue;
-                        if (bestPathHistory[siblingNode] < bestPathHistory[(currNode.X, currNode.Y)]) continue;
+                        if (graph[siblingNode].Depth < graph[(currNode.X, currNode.Y)].Depth) continue;
                         if (siblingNode == endPosition)
                         {
                             int fixedDepth = alreadyCheated ? depth +1 : depth;
@@ -140,7 +142,6 @@ namespace AdventOfCode2024.Day20
 
                     if (alreadyCheated) continue;
 
-                    bool cheated = true;
                     //else cheat from this position
                     foreach (var (Dx, Dy) in teleports)
                     {
@@ -149,14 +150,23 @@ namespace AdventOfCode2024.Day20
                         if (siblingNode.X < 0 || siblingNode.X >= numOfRows) continue;
                         if (siblingNode.Y < 0 || siblingNode.Y >= numofColumns) continue;
                         if (matrix[siblingNode.X, siblingNode.Y] == WALL_CHAR) continue;
-                        if (bestPathHistory[siblingNode] <= depth +1) continue;
+                        if (graph[siblingNode].Depth <= depth +1) continue;
+                        if (!bestPathOnlyNodes.Contains(siblingNode)) continue;
                         if (siblingNode == endPosition)
                         {
                             solutions[depth + 1]++;
                             continue;
                         }
 
-                        nodes.Enqueue((siblingNode.X, siblingNode.Y, cheated));
+                        int currDone = depth + 1;
+                        int toBeDone = solutions.Length - graph[siblingNode].Depth;
+                        int fixedDepth = currDone + toBeDone;
+                        solutions[fixedDepth]++;
+
+
+
+
+
                     }
 
 
@@ -171,14 +181,20 @@ namespace AdventOfCode2024.Day20
 
         }
 
-        private static int Bfs(char[,] matrix, (int X, int Y) startPosition, (int X, int Y) endPosition, Dictionary<(int X, int Y), int> history) {
+        private class NodeData((int X, int Y)? parent, int depth) {
+
+            public (int X, int Y)? Parent = parent;
+            public int Depth = depth;
+        }
+
+        private static int Bfs(char[,] matrix, (int X, int Y) startPosition, (int X, int Y) endPosition, Dictionary<(int X, int Y), NodeData> graph) {
 
             int numOfRows = matrix.GetLength(0);
             int numofColumns = matrix.GetLength(1);
             Queue<(int X, int Y)> nodes = [];
 
             nodes.Enqueue(startPosition);
-            history.Add(startPosition, 0);
+            graph.Add(startPosition, new NodeData(null, 0));
 
             int depth = 1;
             while (nodes.Count > 0) {
@@ -193,8 +209,8 @@ namespace AdventOfCode2024.Day20
                         if (siblingNode.X < 0 || siblingNode.X >= numOfRows) continue;
                         if (siblingNode.Y < 0 || siblingNode.Y >= numofColumns) continue;
                         if (matrix[siblingNode.X, siblingNode.Y] == WALL_CHAR) continue;
-                        if (history.ContainsKey(siblingNode)) continue;
-                        history.Add(siblingNode, depth);
+                        if (graph.ContainsKey(siblingNode)) continue;
+                        graph.Add(siblingNode, new NodeData(currNode, depth));
                         if (siblingNode == endPosition) {
                             return depth;
                         }
@@ -211,10 +227,25 @@ namespace AdventOfCode2024.Day20
             
 
         }
-      
 
-     
-     
+        private static HashSet<(int X, int Y)> GetBestPathNodes(Dictionary<(int X, int Y), NodeData> graph, (int X, int Y) endPosition) {
+            HashSet<(int X, int Y)> bestPathOnlyNodes = [];
+
+            (int X, int Y)? currNode = endPosition;
+            while (currNode != null) {
+
+                bestPathOnlyNodes.Add(currNode.Value);
+                currNode = graph[currNode.Value].Parent;
+
+            }
+
+            return bestPathOnlyNodes;
+
+        }
+
+
+
+
 
     }
     
