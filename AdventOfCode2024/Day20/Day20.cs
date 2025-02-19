@@ -8,8 +8,6 @@ namespace AdventOfCode2024.Day20
         private static readonly bool _debugActiveSolA = false;
         private static readonly bool _debugActiveSolB = false;
 
-        private static readonly bool _debugActive = false;
-
         private const int MIN_NUM_OF_PICOSECONDS_TO_SAVE = 100;
         private const char START_CHAR = 'S';
         private const char WALL_CHAR = '#';
@@ -22,71 +20,37 @@ namespace AdventOfCode2024.Day20
             (0,-1)
         ];
 
-        private readonly static (int Dx, int Dy)[] solATeleports = [
-            (-2,0),
-            (-1,+1),
-            (0,+2),
-            (+1,+1),
-            (+2,0),
-            (+1,-1),
-            (0,-2),
-            (-1,-1)          
-          ];
-
+       
         protected override object SolveA(string input)
         {
-            var (matrix, startingPosition, endPosition) = HandleInput(input);
-            Dictionary<(int X, int Y), NodeData> graph = [];
-            int best = Bfs(matrix, startingPosition, endPosition, graph);
-            HashSet<(int X, int Y)> bestPathOnlyNodes = GetBestPathNodes(graph, endPosition);
-            int[] timesToReachEndCheated = new int[best];
-            CheatSomePath(matrix, startingPosition, endPosition, graph, bestPathOnlyNodes, timesToReachEndCheated);
-
-            for (int i = best - 1; _debugActiveSolA && i >= 0; i--)
-            {
-                if (timesToReachEndCheated[i] == 0) continue;
-                Console.WriteLine($"There are {timesToReachEndCheated[i]} cheats that save {best - i} picoseconds.");
-
-            }
-
-            int minNumOfPicosecondsToSave = MIN_NUM_OF_PICOSECONDS_TO_SAVE;
-            int ans = 0;
-            for (int i = 0;i<best; i++)
-            {
-                if (timesToReachEndCheated[i] == 0) continue;
-                if (best - i < minNumOfPicosecondsToSave) break;
-                ans += timesToReachEndCheated[i];
-
-            }
-
-
-            return ans;
+            return Solve(input, 2);
 
         }
 
         protected override object SolveB(string input)
         {
+            return Solve(input, 20);
+        }
 
-            c++;
-            if (c != 1) return -1;
+
+        private int Solve(string input, int cheatMaxLength, int minNumOfPicosecondsToSave = MIN_NUM_OF_PICOSECONDS_TO_SAVE) {
 
             var (matrix, startingPosition, endPosition) = HandleInput(input);
-            int cheatMaxLength = SOLB_MAX_CHEAT_LENGTH;
             Dictionary<int, (int Dx, int Dy)[]> cheatLengthTeleports = BuildTeleports(cheatMaxLength);
             Dictionary<(int X, int Y), NodeData> graph = [];
             int best = Bfs(matrix, startingPosition, endPosition, graph);
             HashSet<(int X, int Y)> bestPathOnlyNodes = GetBestPathNodes(graph, endPosition);
             int[] timesToReachEndCheated = new int[best];
-            CheatSomePathAdvanced(matrix, startingPosition, endPosition, cheatMaxLength, cheatLengthTeleports, graph, bestPathOnlyNodes, timesToReachEndCheated);
+            MoveThrowExplorablePositionsAndCheat(matrix, startingPosition, cheatMaxLength, cheatLengthTeleports, graph, bestPathOnlyNodes, timesToReachEndCheated);
 
-            for (int i = best - 1; _debugActiveSolB && i >= 0; i--)
+            bool debugActive = (!SolBIsRunning && _debugActiveSolA) || (SolBIsRunning && _debugActiveSolB);
+            for (int i = best - 1; debugActive && i >= 0; i--)
             {
                 if (timesToReachEndCheated[i] == 0) continue;
                 Console.WriteLine($"There are {timesToReachEndCheated[i]} cheats that save {best - i} picoseconds.");
 
             }
 
-            int minNumOfPicosecondsToSave = MIN_NUM_OF_PICOSECONDS_TO_SAVE;
             int ans = 0;
             for (int i = 0; i < best; i++)
             {
@@ -98,6 +62,7 @@ namespace AdventOfCode2024.Day20
 
 
             return ans;
+
         }
 
         private static (char[,] matrix, (int X, int Y) startPosition, (int X, int Y) endPosition) HandleInput(string input)
@@ -114,56 +79,6 @@ namespace AdventOfCode2024.Day20
             int endY = (endIndex) % (col + 2);
 
             return (matrix, (startX, startY), (endX, endY));
-
-
-        }
-
-
-                    foreach (var (Dx, Dy) in directions)
-                    {
-
-                        (int X, int Y) siblingNode = (currNode.X + Dx, currNode.Y + Dy);
-                        if (siblingNode.X < 0 || siblingNode.X >= numOfRows) continue;
-                        if (siblingNode.Y < 0 || siblingNode.Y >= numofColumns) continue;
-                        if (matrix[siblingNode.X, siblingNode.Y] == WALL_CHAR) continue;
-                        if (seen.Contains(siblingNode)) continue;
-                        if (graph[siblingNode].Depth < graph[(currNode.X, currNode.Y)].Depth) continue;
-                       
-
-                        seen.Add(siblingNode);
-                        nodes.Enqueue(siblingNode);
-                    }
-
-                    //else cheat from this position
-                    foreach (var (Dx, Dy) in solATeleports)
-                    {
-
-                        (int X, int Y) siblingNode = (currNode.X + Dx, currNode.Y + Dy);
-                        if (siblingNode.X < 0 || siblingNode.X >= numOfRows) continue;
-                        if (siblingNode.Y < 0 || siblingNode.Y >= numofColumns) continue;
-                        if (matrix[siblingNode.X, siblingNode.Y] == WALL_CHAR) continue;
-                        if (graph[siblingNode].Depth <= depth +1) continue;
-                        if (!bestPathOnlyNodes.Contains(siblingNode)) continue;
-                        if (siblingNode == endPosition)
-                        {
-                            solutions[depth + 1]++;
-                            continue;
-                        }
-
-                        int currDone = depth + 1;
-                        int toBeDone = solutions.Length - graph[siblingNode].Depth;
-                        int fixedDepth = currDone + toBeDone;
-                        solutions[fixedDepth]++;
-                    }
-
-
-
-
-                }
-                depth++;
-            }
-
-            throw new ImpossibleException();
 
 
         }
@@ -230,10 +145,9 @@ namespace AdventOfCode2024.Day20
 
         }
 
-        private static void CheatSomePathAdvanced(
+        private static void MoveThrowExplorablePositionsAndCheat(
         char[,] matrix,
         (int X, int Y) startPosition,
-        (int X, int Y) endPosition,
         int cheatMaxLength,
         Dictionary<int, (int Dx, int Dy)[]> cheatLengthTeleports,
         Dictionary<(int X, int Y), NodeData> graph,
@@ -261,6 +175,7 @@ namespace AdventOfCode2024.Day20
 
                     (int X, int Y) currNode = nodes.Dequeue();
 
+                    //move through explorable positions
                     foreach (var (Dx, Dy) in directions)
                     {
 
@@ -276,18 +191,8 @@ namespace AdventOfCode2024.Day20
                         nodes.Enqueue(siblingNode);
                     }
 
-                    //else cheat from this position
-                    Dictionary<int, int> bestDepthByLength = GetAllDeeperCellsReachableFromCurrentNodeByCheatLength(matrix, cheatMaxLength, numOfRows, numOfColumns, currNode, graph, cheatLengthTeleports, bestPathOnlyNodes);
-                    int currDepth = graph[currNode].Depth;
-                    foreach (KeyValuePair<int, int> best in bestDepthByLength) {
-                        int cheatLength = best.Key;
-                        int reachableDepth = best.Value;
-                        if (depth + cheatLength >= reachableDepth) continue;
-                        int remainingDepthFromReachablePos = solutions.Length - reachableDepth;
-                        int fixedDepth = currDepth + cheatLength + remainingDepthFromReachablePos;
-                        solutions[fixedDepth]++;
-                        
-                    }
+                    //cheat from the considered position once per path
+                    CheatFromThisPositon(matrix, cheatMaxLength, numOfRows, numOfColumns, currNode, graph, cheatLengthTeleports, bestPathOnlyNodes, solutions);
 
 
                 }
@@ -298,8 +203,6 @@ namespace AdventOfCode2024.Day20
 
 
         }
-
-
 
 
         private static Dictionary<int, (int Dx, int Dy)[]> BuildTeleports(int maxLength) {
@@ -336,21 +239,7 @@ namespace AdventOfCode2024.Day20
         }
 
 
-        /// <summary>
-        /// REMEMBER: 
-        ///     1)"Because this cheat has the same start and end positions as the one above, it's the same cheat" -> moving in suboptimal ways doesn't pay out (es: one position that can be reached by 2 moves can be reached with 4 as well, but 2 is the right way to do it
-        ///     2) "Any cheat time not used is lost; it can't be saved for another cheat later." -> AKA can cheat N [0,20] times foreach position in path but only once per path
-        /// </summary>
-        /// <param name="matrix"></param>
-        /// <param name="cheatMaxLength"></param>
-        /// <param name="numOfRows"></param>
-        /// <param name="numOfColumns"></param>
-        /// <param name="currNode"></param>
-        /// <param name="graph"></param>
-        /// <param name="cheatLengthTeleports"></param>
-        /// <param name="bestPathOnlyNodes"></param>
-        /// <returns></returns>
-        private static Dictionary<int, int> GetAllDeeperCellsReachableFromCurrentNodeByCheatLength(
+        private static void CheatFromThisPositon(
             char[,] matrix,
             int cheatMaxLength,
             int numOfRows,
@@ -358,44 +247,35 @@ namespace AdventOfCode2024.Day20
             (int X, int Y) currNode,
             Dictionary<(int X, int Y), NodeData> graph,
             Dictionary<int, (int Dx, int Dy)[]> cheatLengthTeleports,
-            HashSet<(int X, int Y)> bestPathOnlyNodes
+            HashSet<(int X, int Y)> bestPathOnlyNodes,
+            int[] solutions
         ) {
 
-            Dictionary<int, int> bestDepthByLength = [];
+            int currDepth = graph[currNode].Depth;
 
             for (int cheatLength = 2; cheatLength <= cheatMaxLength; cheatLength++) {
 
-                int? maxDepthReachable = null;
-                foreach (var (Dx, Dy) in cheatLengthTeleports[cheatLength]) { 
-
+                (int Dx, int Dy)[] teleports = cheatLengthTeleports[cheatLength];
+                foreach (var (Dx, Dy) in teleports)
+                {
                     (int X, int Y) siblingNode = (currNode.X + Dx, currNode.Y + Dy);
-                    if (siblingNode.X < 0 || siblingNode.X >= numOfRows) continue;
-                    if (siblingNode.Y < 0 || siblingNode.Y >= numOfColumns) continue;
+                    if(siblingNode.X < 0 || siblingNode.X >= numOfRows) continue;
+                    if(siblingNode.Y < 0 || siblingNode.Y >= numOfColumns) continue;
                     if (matrix[siblingNode.X, siblingNode.Y] == WALL_CHAR) continue;
-                    if (!bestPathOnlyNodes.Contains(siblingNode)) continue;
+                    if(!bestPathOnlyNodes.Contains(siblingNode)) continue;
+                    int destDepthOnNormalPath = graph[siblingNode].Depth;
+                    if (currDepth + cheatLength >= destDepthOnNormalPath) continue;
 
-                    if (!maxDepthReachable.HasValue) maxDepthReachable = graph[siblingNode].Depth;
-                    else maxDepthReachable = Math.Max(maxDepthReachable.Value, graph[siblingNode].Depth);
-                }
-
-                //reach positions in dumb ways
-                for (int k = cheatLength -2; k >= 2; k -= 2) {
-
-                    if (!maxDepthReachable.HasValue) maxDepthReachable = bestDepthByLength[k];
-                    else maxDepthReachable = Math.Max(maxDepthReachable.Value, bestDepthByLength[k]);
+                    int remainingMovesAfterTeleport = solutions.Length - destDepthOnNormalPath;
+                    int fixedDepth = currDepth + cheatLength + remainingMovesAfterTeleport;
+                    solutions[fixedDepth]++;
 
                 }
-                if (maxDepthReachable.HasValue) bestDepthByLength.Add(cheatLength, maxDepthReachable.Value);
-                else Console.WriteLine($"Strano nessun maxDepthReachable per {currNode} con cheatLength {cheatLength}");
+
+
             }
-
-
-            return bestDepthByLength;
-
-
         }
-
-
+    
     }
     
 }
