@@ -2,11 +2,11 @@
   "Body": [
     {
       "SolutionA": 7,
-      "SolutionB": -1
+      "SolutionB": "co,de,ka,ta"
     },
     {
       "SolutionA": 1064,
-      "SolutionB": -1
+      "SolutionB": "aq,cc,ea,gc,jo,od,pa,rg,rv,ub,ul,vr,yy"
     }
   ]
 } 
