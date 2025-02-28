@@ -1,11 +1,15 @@
 ﻿
 
+using AdventOfCode2024.Utils;
+using Microsoft.Extensions.FileSystemGlobbing;
+
 namespace AdventOfCode2024.Day23
 {
     internal class Day23 : Day
     {
 
         private static readonly bool _debugActive = false;
+
         private const char SPECIAL_CHAR = 't';
 
         protected override object SolveA(string input)
@@ -27,7 +31,17 @@ namespace AdventOfCode2024.Day23
 
         protected override object SolveB(string input)
         {
-            throw new NotImplementedException();
+            _waitingBar.Show();
+            var (graph, _) = HandleInput(input, SPECIAL_CHAR);
+
+            string largestLAN = String.Empty;
+            HashSet<string> seen = [];
+            foreach (string node in graph.Keys) {
+                FindLargestLAN(graph, node, graph[node], node, seen,ref largestLAN);
+            }
+
+            _waitingBar.Terminate();
+            return CalcPassword(largestLAN);
         }
         private static (Dictionary<string, HashSet<string>> graph, HashSet<string> specialComputers) HandleInput(string input, char specialChar)
         {
@@ -128,8 +142,46 @@ namespace AdventOfCode2024.Day23
 
         }
 
+        private static void FindLargestLAN(
+            Dictionary<string, HashSet<string>> graph,
+            string currNode,
+            HashSet<string> connectedPC,
+            string currLAN,
+            HashSet<string> seen,
+            ref string largestLAN
+        ) {
+
+            if (currLAN.Length > largestLAN.Length) largestLAN = currLAN;
+
+            HashSet<string> canBeAddedToCurrentLAN = [.. connectedPC.Intersect(graph[currNode])];
 
 
+            foreach (string newNode in canBeAddedToCurrentLAN)
+            {
+                string tmpLAN = currLAN + ','+newNode;
+                string check = SortAndFormat(tmpLAN);
+                if (seen.Contains(check)) continue;
+                seen.Add(check);
+
+                FindLargestLAN(graph, newNode, canBeAddedToCurrentLAN, tmpLAN, seen, ref largestLAN);
+
+            }
+
+        }
+
+        private static string SortAndFormat(string LAN) {
+
+            string[] tmp = LAN.Split(',');
+            Array.Sort(tmp);
+            return string.Join(',',tmp);
+        }
+
+        private static string CalcPassword(string LAN) {
+            return SortAndFormat(LAN);
+        }
+
+
+        #region[superfluous]
         const string KEEP_IT_FUN = @"
 
 They delved too greedily and too deep, and disturbed that from which they fled. You know what they awoke in the darkness of Khazad-dûm: shadow and flame.
@@ -181,6 +233,6 @@ They delved too greedily and too deep, and disturbed that from which they fled. 
 
 ";
 
-
+        #endregion
     }
 }
