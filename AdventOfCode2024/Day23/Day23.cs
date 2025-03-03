@@ -1,14 +1,11 @@
 ﻿
-
-using AdventOfCode2024.Utils;
-using Microsoft.Extensions.FileSystemGlobbing;
-
 namespace AdventOfCode2024.Day23
 {
     internal class Day23 : Day
     {
 
         private static readonly bool _debugActive = false;
+        private static readonly bool _useFasterSolution = true;
 
         private const char SPECIAL_CHAR = 't';
 
@@ -31,16 +28,27 @@ namespace AdventOfCode2024.Day23
 
         protected override object SolveB(string input)
         {
-            _waitingBar.Show();
+
             var (graph, _) = HandleInput(input, SPECIAL_CHAR);
 
             string largestLAN = String.Empty;
-            HashSet<string> seen = [];
-            foreach (string node in graph.Keys) {
-                FindLargestLAN(graph, node, graph[node], node, seen,ref largestLAN);
+            if (!_useFasterSolution)
+            {
+                _waitingBar.Show();
+
+                HashSet<string> seen = [];
+                foreach (string node in graph.Keys)
+                {
+                    FindLargestLAN(graph, node, graph[node], node, seen, ref largestLAN);
+                }
+
+                _waitingBar.Terminate();
+            }
+            else {
+                largestLAN = BronKerboschAlgorithm.FindLargestCliqueWithPivoting(graph);            
             }
 
-            _waitingBar.Terminate();
+           
             return CalcPassword(largestLAN);
         }
         private static (Dictionary<string, HashSet<string>> graph, HashSet<string> specialComputers) HandleInput(string input, char specialChar)
@@ -178,6 +186,99 @@ namespace AdventOfCode2024.Day23
 
         private static string CalcPassword(string LAN) {
             return SortAndFormat(LAN);
+        }
+
+
+        /// <summary>
+        /// Found this algorithm on Reddit after solution submission.
+        /// Bron-Kerbosch Algorithm find the largest clique (set of all connected nodes) in a graph in O(3^(n/3)).
+        /// </summary>
+        private static class BronKerboschAlgorithm
+        {
+
+            public static string FindLargestCliqueWithPivoting(Dictionary<string, HashSet<string>> graph)
+            {
+                HashSet<string> maxClique = [];
+                HashSet<string> potential = [.. graph.Keys];
+                HashSet<string> current = [];
+                HashSet<string> excluded = [];
+
+                BronKerboschWithPivot(graph, current, potential, excluded, ref maxClique);
+
+                return string.Join(",", maxClique);
+            }
+
+            private static void BronKerboschWithPivot(
+                Dictionary<string, HashSet<string>> graph,
+                HashSet<string> current,
+                HashSet<string> potential,
+                HashSet<string> excluded,
+                ref HashSet<string> maxClique)
+            {
+                bool foundMaximalClique = potential.Count == 0 && excluded.Count == 0;
+                if (foundMaximalClique)
+                {
+                    if (current.Count > maxClique.Count)
+                    {
+                        maxClique = [..current];
+                    }
+                    return;
+                }
+
+                HashSet<string> unionSet = [.. potential.Union(excluded)];
+
+                string? pivot = SelectPivot(graph, unionSet, potential);
+                if(pivot is null) return;
+
+
+                HashSet<string> nodesToCondider = [.. potential.Except(graph[pivot])];
+                nodesToCondider.Add(pivot);
+
+
+                foreach (string node in nodesToCondider)
+                {
+                    current.Add(node);
+
+                    HashSet<string> neighbors = graph[node];
+
+                    HashSet<string> newPotential = [..potential.Intersect(neighbors)];
+
+                    HashSet<string> newExcluded = [..excluded.Intersect(neighbors)];
+
+                    BronKerboschWithPivot(graph, current, newPotential, newExcluded, ref maxClique);
+
+                    current.Remove(node);
+                    potential.Remove(node);
+                    excluded.Add(node);
+                }
+            }
+
+            private static string? SelectPivot(
+                Dictionary<string, HashSet<string>> graph,
+                HashSet<string> allNodes,
+                HashSet<string> potential)
+            {
+                string? pivot = null;
+                int maxConnections = -1;
+
+                foreach (string node in allNodes)
+                {
+
+                    int connections = 0;
+                    foreach (string neighbor in graph[node])
+                    {
+                        if (potential.Contains(neighbor)) connections++;
+                    }
+
+                    if (connections > maxConnections)
+                    {
+                        maxConnections = connections;
+                        pivot = node;
+                    }
+                }
+
+                return pivot;
+            }
         }
 
 
