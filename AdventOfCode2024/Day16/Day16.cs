@@ -1,9 +1,6 @@
 ﻿
 
 using AdventOfCode2024.Utils;
-using Serilog;
-using System.Diagnostics;
-using System.Text;
 
 namespace AdventOfCode2024.Day16
 {

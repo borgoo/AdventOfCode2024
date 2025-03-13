@@ -1,6 +1,5 @@
 ﻿using AdventOfCode2024.Exceptions;
 using AdventOfCode2024.Utils;
-using Serilog;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
@@ -30,7 +29,7 @@ namespace AdventOfCode2024
             Solution[] expectedResults = ReadTestFile();
             Stopwatch stopwatch = new();
             for (int i = 0; i < inputs.Count; i++) {
-                Log.Debug($"== input {i + 1} ==");
+                Console.WriteLine($"== input {i + 1} ==");
                 try
                 {
                     stopwatch.Start();
@@ -121,11 +120,11 @@ namespace AdventOfCode2024
         protected void SayHi() { 
 
             string className = GetClassName();
-            Log.Debug($"[{className}]");
+            Console.WriteLine($"[{className}]");
         }
 
         protected static void SayGoodBye() {
-            Log.Debug("\n");
+            Console.WriteLine("\n");
         }
 
 
@@ -136,11 +135,11 @@ namespace AdventOfCode2024
             expectedResult ??= "null";
 
             if (result.ToString() != expectedResult.ToString()) {
-                Log.Debug($"{str}: [{TurnRed("FAIL")}]");
-                Log.Debug($"  Expected: {expectedResult}\n  Result: {result}");
+                Console.WriteLine($"{str}: [{TurnRed("FAIL")}]");
+                Console.WriteLine($"  Expected: {expectedResult}\n  Result: {result}");
             }
             else {
-                Log.Debug($"{str}: {TurnGreen("ok")}");
+                Console.WriteLine($"{str}: {TurnGreen("ok")}");
             }
                               
         
@@ -159,7 +158,7 @@ namespace AdventOfCode2024
         }
 
         private static void NotImplemented(string str) {
-            Log.Debug($"{str} not implemented yet.");
+            Console.WriteLine($"{str} not implemented yet.");
         }
 
         private static void MerryChristmas(string str) {
@@ -173,7 +172,7 @@ namespace AdventOfCode2024
                 else sb.Append(TurnRed(str[i].ToString()));
             }
 
-            Log.Debug(sb.ToString());
+            Console.WriteLine(sb.ToString());
         }
 
         private static void PrintTime(Stopwatch stopwatch) {
@@ -192,7 +191,7 @@ namespace AdventOfCode2024
                 unit = "s";
             }
 
-            Log.Debug($"  Time: {time:0.0} {unit}");
+            Console.WriteLine($"  Time: {time:0.0} {unit}");
 
         }
     }
