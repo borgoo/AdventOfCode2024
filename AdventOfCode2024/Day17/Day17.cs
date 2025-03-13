@@ -91,7 +91,7 @@ namespace AdventOfCode2024.Day17
                     4 => RegA,
                     5 => RegB,
                     6 => RegC,
-                    _ => throw new NotImplementedException(),
+                    _ => throw new NotHandledException(),
                 };
             }
 
@@ -186,7 +186,7 @@ namespace AdventOfCode2024.Day17
                         Cdv(operand ?? throw new NullReferenceException());
                         break;
                     default:
-                        throw new NotImplementedException();
+                        throw new NotHandledException();
                 }
 
                 InstructionPointer+=2;

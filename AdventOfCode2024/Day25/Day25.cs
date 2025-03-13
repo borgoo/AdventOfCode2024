@@ -96,7 +96,7 @@ namespace AdventOfCode2024.Day25
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    throw new NotHandledException();
                 }
 
             }

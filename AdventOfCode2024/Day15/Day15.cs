@@ -245,7 +245,7 @@ namespace AdventOfCode2024.Day15
 
 
                         default:
-                            throw new NotImplementedException();
+                            throw new NotHandledException();
                     }
 
        

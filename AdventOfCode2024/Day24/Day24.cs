@@ -370,7 +370,7 @@ namespace AdventOfCode2024.Day24
                 string operation = lines[i];
                 string[] tmp = operation.Split(' ');
                 string inputA = tmp[0];
-                if (!Enum.TryParse(tmp[1], out GateType gate)) throw new NotImplementedException(tmp[1]);
+                if (!Enum.TryParse(tmp[1], out GateType gate)) throw new NotHandledException(tmp[1]);
                 string inputB = tmp[2];
                 string output = tmp[4];
 
@@ -446,7 +446,7 @@ namespace AdventOfCode2024.Day24
                 GateType.OR => a == true || b == true,
                 GateType.AND => a != false && b != false,
                 GateType.XOR => a != b,
-                _ => throw new NotImplementedException(),
+                _ => throw new NotHandledException(),
             };
         }
 

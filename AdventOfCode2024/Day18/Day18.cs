@@ -1,4 +1,5 @@
-﻿using AdventOfCode2024.Utils;
+﻿using AdventOfCode2024.Exceptions;
+using AdventOfCode2024.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace AdventOfCode2024.Day18
                     string[] pair = data[i].Split(',');
                     int x = Convert.ToInt32(pair[0]);
                     int y = Convert.ToInt32(pair[1]);
-                    if (x == 0 && y == 0) throw new NotImplementedException("(0,0) cannot be inaccessible.");
+                    if (x == 0 && y == 0) throw new NotHandledException("(0,0) cannot be inaccessible.");
                     if (x > maxX) maxX = x;
                     if (y > maxY) maxY = y;
                     walls.Enqueue((x, y));
@@ -116,7 +117,7 @@ namespace AdventOfCode2024.Day18
                 string[] pair = data[i].Split(',');
                 int x = Convert.ToInt32(pair[0]);
                 int y = Convert.ToInt32(pair[1]);
-                if (x == 0 && y == 0) throw new NotImplementedException("(0,0) cannot be inaccessible.");
+                if (x == 0 && y == 0) throw new NotHandledException("(0,0) cannot be inaccessible.");
                 if (x > maxX) maxX = x;
                 if (y > maxY) maxY = y;
                 walls.Add((x, y));
