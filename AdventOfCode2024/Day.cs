@@ -130,10 +130,10 @@ namespace AdventOfCode2024
 
 
 
-        protected static void Assert(string str, object result, object expectedResult) {
+        protected static void Assert(string str, object? result, object? expectedResult) {
 
-            _ = result ?? throw new NullReferenceException("Null result not allowed.");
-            _ = expectedResult ?? throw new NullReferenceException("Null expected result not allowed.");
+            result ??= "null";
+            expectedResult ??= "null";
 
             if (result.ToString() != expectedResult.ToString()) {
                 Log.Debug($"{str}: [{TurnRed("FAIL")}]");
