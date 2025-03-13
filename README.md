@@ -1,4 +1,4 @@
-# Advent of Code 2k24
+# [Advent of Code 2k24](https://adventofcode.com/2024)
 
 ## 👨‍💻 Info
 * **Developed by** Alessandro Borgonovo (_borgoo_)
