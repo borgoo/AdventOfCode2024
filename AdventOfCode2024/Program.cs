@@ -1,7 +1,6 @@
 ﻿
 using AdventOfCode2024.Exceptions;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using System.Reflection;
 
 namespace AdventOfCode2024
@@ -28,16 +27,7 @@ namespace AdventOfCode2024
             int startingDay = config.GetValue<int>("AppSettings:StartingDay");
             int endDay = config.GetValue<int>("AppSettings:LastDay");
 
-            Log.Logger = new LoggerConfiguration()
-                           .WriteTo.Console(
-                                theme: Serilog.Sinks.SystemConsole.Themes.SystemConsoleTheme.Literate,
-                                outputTemplate: "{Message:lj}{NewLine}{Exception}"
-                           )
-                           //.WriteTo.File($"{nameSpace}.log")
-                           .MinimumLevel.Debug()
-                           .CreateLogger();
-
-
+           
             for (int i = endDay; i >= startingDay; i--) {
 
                 try { 
@@ -48,9 +38,9 @@ namespace AdventOfCode2024
                 {
                     continue;
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException )
                 {
-                    Log.Error(ex.ToString());
+                    throw;
                 }
             }
 
