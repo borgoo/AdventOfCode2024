@@ -1,5 +1,7 @@
 ﻿
 using AdventOfCode2024.Exceptions;
+using AdventOfCode2024.Utils;
+using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Text;
 
@@ -8,7 +10,8 @@ namespace AdventOfCode2024.Day24
 {
     internal class Day24 : Day
     {
-        private const string BROWSER_EXEC_PATH = ""; // C:\\..\\chrome.exe;
+        // C:\\..\\chrome.exe;
+        private static readonly string BROWSER_EXEC_PATH = AppSettingsSingleton.Instance.Configuration.GetValue<string>("AppSettings:Day24:BrowserExecPath") ?? throw new ArgumentNullException("AppSettings:Day24:BrowserExecPath"); 
 
         private const char OUTPUTGATE_CHAR = 'z';
         private const char TRUE_AS_CHAR = '1';
@@ -168,8 +171,6 @@ namespace AdventOfCode2024.Day24
             }
 
             private static void DisplayGraph(Dictionary<string, Gate> graph,short zMaxIdx, string firstWrongZxx) {
-
-                if (string.IsNullOrEmpty(BROWSER_EXEC_PATH)) throw new Exception("Missing BROWSER_EXEC_PATH value.");
 
                 Console.Write($"[Wrong {firstWrongZxx}] See your browser to see the circuit preview. Press ENTER to continue... ");
 
