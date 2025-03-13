@@ -1,5 +1,6 @@
 ﻿
 using AdventOfCode2024.Exceptions;
+using AdventOfCode2024.Utils;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
@@ -22,10 +23,11 @@ namespace AdventOfCode2024
                     .AddJsonFile($"appsettings.{environment}.json", optional: false, reloadOnChange: true)
                     .Build();
 
+            AppSettingsSingleton.Instance.Initialize(config);
 
-            bool lastDayAvailableOnly = config.GetValue<bool>("AppSettings:LastDayAvailableOnly");
-            int startingDay = config.GetValue<int>("AppSettings:StartingDay");
-            int endDay = config.GetValue<int>("AppSettings:LastDay");
+            bool lastDayAvailableOnly = AppSettingsSingleton.Instance.Configuration.GetValue<bool>("AppSettings:LastDayAvailableOnly");
+            int startingDay = AppSettingsSingleton.Instance.Configuration.GetValue<int>("AppSettings:StartingDay");
+            int endDay = AppSettingsSingleton.Instance.Configuration.GetValue<int>("AppSettings:LastDay");
 
            
             for (int i = endDay; i >= startingDay; i--) {
