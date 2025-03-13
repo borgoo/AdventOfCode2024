@@ -16,6 +16,7 @@ namespace AdventOfCode2024.Day24
         private const char OUTPUTGATE_CHAR = 'z';
         private const char TRUE_AS_CHAR = '1';
         private const ushort SOLB_ONLY_SOLUTION = 3;
+        private const string CACHED_RESULT_TO_SKIP_INTERACTIVE_PART = "hnv,hth,kfm,tqr,vmv,z07,z20,z28";
 
         protected override object SolveA(string input)
         {
@@ -224,8 +225,22 @@ namespace AdventOfCode2024.Day24
 
                 return (gateA, gateB);
             }
+
+            private static bool SkipInteractivePart() { 
+
+                Console.Write($"Would you skip the interactive part? [Y] Yes, [N] No - ");
+                while (true) {
+                    string? input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input) && ( input.Equals("Y", StringComparison.CurrentCultureIgnoreCase) || input.Equals("YES", StringComparison.CurrentCultureIgnoreCase) ) ) return true;
+                    if (!string.IsNullOrEmpty(input) && (input.Equals("N", StringComparison.CurrentCultureIgnoreCase) || input.Equals("NO", StringComparison.CurrentCultureIgnoreCase))) return false;
+
+                }
+
+            }
             public static string Solve(string input)
             {
+
+                if (SkipInteractivePart()) return CACHED_RESULT_TO_SKIP_INTERACTIVE_PART;
 
                 List<string> ans = [];
 
