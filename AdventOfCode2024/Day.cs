@@ -1,6 +1,8 @@
-﻿using AdventOfCode2024.Utils;
+﻿using AdventOfCode2024.Exceptions;
+using AdventOfCode2024.Utils;
 using Serilog;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 namespace AdventOfCode2024
@@ -40,6 +42,10 @@ namespace AdventOfCode2024
                 catch (NotImplementedException) {
                     NotImplemented("SolA");
                 }
+                catch (IsChristmasTimeException)
+                {
+                    MerryChristmas("SolA");
+                }
 
                 try
                 {
@@ -50,9 +56,13 @@ namespace AdventOfCode2024
                     stopwatch.Stop();
                     Assert("SolB", resB, expectedResults[i].SolutionB);
                     if (TIMER_ACTIVE) PrintTime(stopwatch);
-                } catch (NotImplementedException)
+                }
+                catch (NotImplementedException)
                 {
                     NotImplemented("SolB");
+                }
+                catch (IsChristmasTimeException) {
+                    MerryChristmas("SolB");
                 }
 
               
@@ -70,8 +80,8 @@ namespace AdventOfCode2024
             public Solution[] Body { get; set; } = [];
         }
         public class Solution { 
-            public object SolutionA { get; set; }
-            public object SolutionB{ get; set; }
+            public object? SolutionA { get; set; }
+            public object? SolutionB{ get; set; }
         }
 
         protected string GetClassName() {
@@ -150,6 +160,20 @@ namespace AdventOfCode2024
 
         private static void NotImplemented(string str) {
             Log.Debug($"{str} not implemented yet.");
+        }
+
+        private static void MerryChristmas(string str) {
+
+            str = str+": IS CHRISTMAS TIIIIIME!";
+            StringBuilder sb = new();
+            for (int i = 0; i < str.Length; i++)
+            {
+
+                if (i % 2 == 0) sb.Append(TurnGreen(str[i].ToString()));
+                else sb.Append(TurnRed(str[i].ToString()));
+            }
+
+            Log.Debug(sb.ToString());
         }
 
         private static void PrintTime(Stopwatch stopwatch) {
