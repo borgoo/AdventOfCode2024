@@ -326,7 +326,7 @@ namespace AdventOfCode2024.Day15
                 HashSet<((int X, int Y), char dir)> notPermittedMoves,
                 char move,
                 (int X, int Y) originPosition,
-                Dictionary<(int X, int Y), char> operations
+                Dictionary<(int X, int Y), char>? operations
             ) {
 
                 operations = null;
