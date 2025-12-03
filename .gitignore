@@ -365,5 +365,5 @@ FodyWeavers.xsd
 #Borgo manual
 appsettings.Dev.json
 
-# Do not commit Puzzle Inputs
-Day*.PuzzleInput.txt
+# Do not commit Puzzle inputs
+Day*.input.*.txt
